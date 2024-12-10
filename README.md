@@ -19,7 +19,7 @@ MIT License
    ```elixir
    def deps do
      [
-       {:commanded_audit_middleware, "~> 1.0"}
+       {:commanded_audit_middleware, github: "alissonfpmorais/commanded-audit-middleware", ref: "main"}
      ]
    end
    ```
