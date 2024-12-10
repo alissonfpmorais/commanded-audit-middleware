@@ -1,4 +1,6 @@
 defmodule Commanded.Middleware.Auditing do
+  @moduledoc false
+
   @behaviour Commanded.Middleware
 
   alias Commanded.Middleware.Auditing.CommandAudit

@@ -1,4 +1,6 @@
 defmodule Commanded.Middleware.AuditingTest do
+  @moduledoc false
+
   use ExUnit.Case
 
   alias Commanded.Middleware.Auditing
@@ -6,6 +8,8 @@ defmodule Commanded.Middleware.AuditingTest do
   alias Commanded.Middleware.Pipeline
 
   defmodule Command do
+    @moduledoc false
+
     defstruct [:name, :age, :password, :password_confirmation, :secret]
   end
 
@@ -25,21 +29,20 @@ defmodule Commanded.Middleware.AuditingTest do
       assert audit.correlation_id == pipeline.correlation_id
       assert audit.command_uuid == pipeline.command_uuid
 
-      assert audit.data in [
-               "{\"age\":34,\"name\":\"Ben\",\"password\":\"[FILTERED]\",\"password_confirmation\":\"[FILTERED]\",\"secret\":\"[FILTERED]\"}",
-               %{
-                 "age" => 34,
-                 "name" => "Ben",
-                 "password" => "[FILTERED]",
-                 "password_confirmation" => "[FILTERED]",
-                 "secret" => "[FILTERED]"
-               }
-             ]
+      {:ok, data} = Jason.decode(audit.data)
+      {:ok, metadata} = Jason.decode(audit.metadata)
 
-      assert audit.metadata in [
-               "{\"user\":\"user@example.com\"}",
-               %{"user" => "user@example.com"}
-             ]
+      assert data == %{
+               "age" => 34,
+               "name" => "Ben",
+               "password" => "[FILTERED]",
+               "password_confirmation" => "[FILTERED]",
+               "secret" => "[FILTERED]"
+             }
+
+      assert metadata == %{
+               "user" => "user@example.com"
+             }
 
       assert is_nil(audit.success)
       assert is_nil(audit.execution_duration_usecs)
@@ -94,8 +97,8 @@ defmodule Commanded.Middleware.AuditingTest do
   defp execute_before_dispatch(_context) do
     pipeline =
       %Pipeline{
-        causation_id: UUID.uuid4(),
-        correlation_id: UUID.uuid4(),
+        causation_id: UUIDv7.generate(),
+        correlation_id: UUIDv7.generate(),
         command: %Command{
           name: "Ben",
           age: 34,
@@ -103,7 +106,7 @@ defmodule Commanded.Middleware.AuditingTest do
           password_confirmation: 1234,
           secret: "I'm superdupersecret!"
         },
-        command_uuid: UUID.uuid4(),
+        command_uuid: UUIDv7.generate(),
         metadata: %{user: "user@example.com"}
       }
       |> Auditing.before_dispatch()

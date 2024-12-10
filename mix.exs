@@ -7,7 +7,7 @@ defmodule Commanded.Middleware.Auditing.Mixfile do
     [
       app: :commanded_audit_middleware,
       version: @version,
-      elixir: "~> 1.7",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       description: description(),
       package: package(),
@@ -45,13 +45,13 @@ defmodule Commanded.Middleware.Auditing.Mixfile do
 
   defp deps do
     [
-      {:commanded, "~> 1.0", runtime: false},
-      {:ecto, "~> 3.3"},
-      {:ecto_sql, "~> 3.3"},
-      {:elixir_uuid, "~> 1.2"},
-      {:ex_doc, ">= 0.0.0", only: :dev},
-      {:jason, "~> 1.1"},
-      {:postgrex, "~> 0.15"}
+      {:commanded, "~> 1.4", runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:ecto_sql, "~> 3.12"},
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+      {:jason, "~> 1.4"},
+      {:postgrex, "~> 0.19"},
+      {:uuidv7, "~> 1.0"},
     ]
   end
 
